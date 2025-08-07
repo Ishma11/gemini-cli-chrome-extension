@@ -60,8 +60,6 @@ export interface CommandContext {
     toggleCorgiMode: () => void;
     toggleVimEnabled: () => Promise<boolean>;
     setGeminiMdFileCount: (count: number) => void;
-    /** Sets whether local context (from ~/usr/local/google/home/ishmas/gemini-cli/.gemini_cli_context/gemini_context.md) is enabled in interactive mode. */
-    setEnableLocalContextInInteractiveMode: React.Dispatch<React.SetStateAction<boolean>>;
   };
   // Session-specific data
   session: {

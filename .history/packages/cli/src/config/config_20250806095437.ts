@@ -66,7 +66,6 @@ export interface CliArgs {
   proxy: string | undefined;
   includeDirectories: string[] | undefined;
   loadMemoryFromIncludeDirectories: boolean | undefined;
-  enableLocalContext: boolean | undefined;
 }
 
 export async function parseArguments(): Promise<CliArgs> {
@@ -218,11 +217,6 @@ export async function parseArguments(): Promise<CliArgs> {
       type: 'boolean',
       description:
         'If true, when refreshing memory, GEMINI.md files should be loaded from all directories that are added. If false, GEMINI.md files should only be loaded from the primary working directory.',
-      default: false,
-    })
-    .option('enable-local-context', {
-      type: 'boolean',
-      description: 'Enable reading of /usr/local/google/home/ishmas/gemini-cli/.gemini_cli_context/gemini_context.md for this session.',
       default: false,
     })
     .version(await getCliVersion()) // This will enable the --version flag based on package.json

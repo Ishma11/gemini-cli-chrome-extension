@@ -168,8 +168,6 @@ const App = ({ config, settings, startupWarnings = [], version }: AppProps) => {
   const [showPrivacyNotice, setShowPrivacyNotice] = useState<boolean>(false);
   const [modelSwitchedFromQuotaError, setModelSwitchedFromQuotaError] =
     useState<boolean>(false);
-  const [enableLocalContextInInteractiveMode, setEnableLocalContextInInteractiveMode] =
-    useState<boolean>(false);
   const [userTier, setUserTier] = useState<UserTierId | undefined>(undefined);
   const [ideContextState, setIdeContextState] = useState<
     IdeContext | undefined
@@ -486,7 +484,6 @@ const App = ({ config, settings, startupWarnings = [], version }: AppProps) => {
     toggleVimEnabled,
     setIsProcessing,
     setGeminiMdFileCount,
-    setEnableLocalContextInInteractiveMode,
   );
 
   const {
@@ -509,7 +506,6 @@ const App = ({ config, settings, startupWarnings = [], version }: AppProps) => {
     modelSwitchedFromQuotaError,
     setModelSwitchedFromQuotaError,
     refreshStatic,
-    enableLocalContextInInteractiveMode,
   );
 
   // Input handling

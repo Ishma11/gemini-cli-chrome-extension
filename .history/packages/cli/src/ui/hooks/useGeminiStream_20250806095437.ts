@@ -46,12 +46,9 @@ import { useStateAndRef } from './useStateAndRef.js';
 import { UseHistoryManagerReturn } from './useHistoryManager.js';
 import { useLogger } from './useLogger.js';
 import { promises as fs } from 'fs';
-import { join } from 'path';
 import path from 'path';
-// import { homedir } from 'os';
 import {
   useReactToolScheduler,
-
   mapToDisplay as mapTrackedToolCallsToDisplay,
   TrackedToolCall,
   TrackedCompletedToolCall,
@@ -97,7 +94,6 @@ export const useGeminiStream = (
   modelSwitchedFromQuotaError: boolean,
   setModelSwitchedFromQuotaError: React.Dispatch<React.SetStateAction<boolean>>,
   onEditorClose: () => void,
-  enableLocalContextInInteractiveMode: boolean,
 ) => {
   const [initError, setInitError] = useState<string | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -278,40 +274,14 @@ export const useGeminiStream = (
           }
         }
 
-        let localContext: string | null = null;
-        onDebugMessage(`enableLocalContextInInteractiveMode: ${enableLocalContextInInteractiveMode}`);
-        if (enableLocalContextInInteractiveMode) {
-          try {
-            const CONTEXT_DIR = "/usr/local/google/home/ishmas/gemini-cli/.gemini_cli_context"
-            const contextFilePath = join(CONTEXT_DIR, "gemini_context.md");
-            localContext = await fs.readFile(contextFilePath, 'utf-8');
-            onDebugMessage(`Read local context: ${localContext.substring(0, 100)}...`);
-          } catch (error) {
-            const nodeError = error as NodeJS.ErrnoException;
-            if (nodeError.code !== 'ENOENT') {
-              console.error(`Error reading local context file: ${error}`);
-              onDebugMessage(`Error reading local context file: ${nodeError.message}`);
-            }
-            // Fail gracefully if file doesn't exist
-            localContext = null;
-            onDebugMessage(`Local context file not found or error, setting to null.`);
-          }
-        }
-
-        const fullInput = localContext
-          ? `local context : ${localContext}\n\n user prompt: ${trimmedQuery}`
-          : `user prompt: ${trimmedQuery}`;
-
-        onDebugMessage(`Full input constructed: ${fullInput.substring(0, 200)}...`);
-
         if (shellModeActive && handleShellCommand(trimmedQuery, abortSignal)) {
           return { queryToSend: null, shouldProceed: false };
         }
 
         // Handle @-commands (which might involve tool calls)
-        if (isAtCommand(fullInput)) {
+        if (isAtCommand(trimmedQuery)) {
           const atCommandResult = await handleAtCommand({
-            query: fullInput,
+            query: trimmedQuery,
             config,
             addItem,
             onDebugMessage,
@@ -328,7 +298,7 @@ export const useGeminiStream = (
             { type: MessageType.USER, text: trimmedQuery },
             userMessageTimestamp,
           );
-          localQueryToSendToGemini = fullInput;
+          localQueryToSendToGemini = trimmedQuery;
         }
       } else {
         // It's a function response (PartListUnion that isn't a string)
@@ -736,7 +706,6 @@ export const useGeminiStream = (
       startNewPrompt,
       getPromptCount,
       handleLoopDetectedEvent,
-      enableLocalContextInInteractiveMode,
     ],
   );
 

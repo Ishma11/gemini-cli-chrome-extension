@@ -19,15 +19,10 @@ import { Content, Part, FunctionCall } from '@google/genai';
 import { parseAndFormatApiError } from './ui/utils/errorParsing.js';
 import { ConsolePatcher } from './ui/utils/ConsolePatcher.js';
 
-import { promises as fs } from 'fs';
-// import { homedir } from 'os';
-import { join } from 'path';
-
 export async function runNonInteractive(
   config: Config,
   input: string,
   prompt_id: string,
-  enableLocalContext: boolean,
 ): Promise<void> {
   const consolePatcher = new ConsolePatcher({
     stderr: true,
@@ -49,29 +44,8 @@ export async function runNonInteractive(
     const toolRegistry: ToolRegistry = await config.getToolRegistry();
 
     const abortController = new AbortController();
-
-    let localContext: string | null = null;
-  if (enableLocalContext) {
-    try {
-      const CONTEXT_DIR = "/usr/local/google/home/ishmas/gemini-cli/.gemini_cli_context"
-      const contextFilePath = join(CONTEXT_DIR, "gemini_context.md");
-      localContext = await fs.readFile(contextFilePath, 'utf-8');
-    } catch (error) {
-      const nodeError = error as NodeJS.ErrnoException;
-      if (nodeError.code !== 'ENOENT') {
-        console.error(`Error reading local context file: ${error}`);
-      }
-    }
-  }
-
-  const fullInput = localContext
-    ? `local context : ${localContext}\n\n user prompt: ${input}`
-    : `user prompt: ${input}`;
-
-  console.log('Full input sent to Gemini:', fullInput);
-
     let currentMessages: Content[] = [
-      { role: 'user', parts: [{ text: fullInput }] },
+      { role: 'user', parts: [{ text: input }] },
     ];
     let turnCount = 0;
     while (true) {

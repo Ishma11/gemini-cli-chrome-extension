@@ -46,12 +46,10 @@ import { useStateAndRef } from './useStateAndRef.js';
 import { UseHistoryManagerReturn } from './useHistoryManager.js';
 import { useLogger } from './useLogger.js';
 import { promises as fs } from 'fs';
-import { join } from 'path';
 import path from 'path';
 // import { homedir } from 'os';
 import {
   useReactToolScheduler,
-
   mapToDisplay as mapTrackedToolCallsToDisplay,
   TrackedToolCall,
   TrackedCompletedToolCall,
